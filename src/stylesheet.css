@@ -1,0 +1,7 @@
+.top_button {
+    -fx-text-fill: black;
+    -fx-font-size: 14;
+    -fx-font-family: sans-serif;
+    -fx-padding: 10;
+    -fx-background-color: gainsboro;
+}
