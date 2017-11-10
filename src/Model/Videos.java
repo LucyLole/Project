@@ -4,11 +4,14 @@ class Videos {
     private int videoID;
     private String videoName;
     private float videoLength;
+    private String videoFilePath;
 
-    public Videos(int videoID, String videoName, float videoLength) {
+
+    public Videos(int videoID, String videoName, float videoLength, String videoFilePath) {
         this.videoID = videoID;
         this.videoName = videoName;
         this.videoLength = videoLength;
+        this.videoFilePath = videoFilePath;
     }
 
     public int getVideoID() {
@@ -29,5 +32,13 @@ class Videos {
 
     public void setVideoLength(float videoLength) {
         this.videoLength = videoLength;
+    }
+
+    public String getVideoFilePath() {
+        return videoFilePath;
+    }
+
+    public void setVideoFilePath(String videoFilePath) {
+        this.videoFilePath = videoFilePath;
     }
 }

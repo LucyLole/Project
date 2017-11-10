@@ -6,11 +6,15 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import Model.DatabaseConnection;
 
 public class Main extends Application {
+    public static DatabaseConnection Database;
+    //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        Database = new DatabaseConnection("../MusicPlayerDataBase.db");
         BorderPane borderRoot = new BorderPane();
         VBox root = new VBox();
 
@@ -27,7 +31,7 @@ public class Main extends Application {
         MenuItem fileItem1 = new MenuItem("Open");
         fileMenu.getItems().addAll(fileItem1);
         topMenu.getMenus().addAll(fileMenu);
-        root.getChildren().add(fileMenu);
+        //root.getChildren().add(fileMenu);
 
         //buttons
         Button audioButton = new Button("Audio");
@@ -51,3 +55,4 @@ public class Main extends Application {
         launch(args);
     }
 }
+
