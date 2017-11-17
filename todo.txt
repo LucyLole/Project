@@ -1,0 +1,26 @@
+TODO:
+
+
+padding to buttons n stuff
+
+left pane:
+-vbox
+--add
+--delete
+--edit
+--padding
+--play button
+
+center pane:
+-table view
+
+top pane
+-search field aligned left
+
+
+Add styles to buttons
+-default
+-hover
+-pressed
+
+Add style to top bar

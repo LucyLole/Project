@@ -1,7 +1,19 @@
 .top_button {
+    -fx-padding: 3 30 3 30;
     -fx-text-fill: black;
-    -fx-font-size: 14;
+    -fx-font-size: 14px;
     -fx-font-family: sans-serif;
-    -fx-padding: 10;
-    -fx-background-color: gainsboro;
+    -fx-border-colour: DARKSLATEGREY;
+
+    -fx-background-color:
+        #dd7e6b,
+        linear-gradient(#fafdfe, #dd7e6b),
+        linear-gradient(#eaf6fd 100%, #d9f0fc 49%, #bee6fd 50%, #a7d9f5 100%);
+
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 3,2,1;
+
+}
+.top_button:hover {
+    -fx-background-color: #dd7e6b;
 }
