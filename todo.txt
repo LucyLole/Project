@@ -1,6 +1,4 @@
 TODO:
-
-
 padding to buttons n stuff
 
 left pane:

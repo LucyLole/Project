@@ -8,6 +8,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import Model.DatabaseConnection;
 
+import static javafx.scene.layout.Priority.ALWAYS;
+
 public class Main extends Application {
     public static DatabaseConnection Database;
     //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
@@ -32,9 +34,9 @@ public class Main extends Application {
 
         //we create a HBox for the top called topSection
         HBox topSection = new HBox(10);
-        topSection.setHgrow(topSection,Priority.ALWAYS);
-        HBox leftTopSection = new HBox(10);
+        topSection.setHgrow(topSection, ALWAYS);
         HBox rightTopSection = new HBox(10);
+        rightTopSection.setHgrow(rightTopSection,ALWAYS);
 
         //we set topSection to be the top in our boarderPane
 
@@ -59,15 +61,14 @@ public class Main extends Application {
 
         /*Alignment for the top section buttons*/
         topSection.setAlignment(Pos.TOP_CENTER);
-
+        audioButton.setAlignment(Pos.CENTER_RIGHT);
+        videoButton.setAlignment(Pos.CENTER_RIGHT);
         //adding to the scene
         topSection.getChildren().add(searchButton);
         rightTopSection.getChildren().add(audioButton);
         rightTopSection.getChildren().add(videoButton);
 
-        topSection.getChildren().add(leftTopSection);
         topSection.getChildren().add(rightTopSection);
-        leftTopSection.setAlignment(Pos.TOP_LEFT);
         rightTopSection.setAlignment(Pos.TOP_RIGHT);
         root.getChildren().add(borderRoot);
         borderRoot.setTop(topSection);
