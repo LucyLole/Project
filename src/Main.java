@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -31,12 +32,13 @@ public class Main extends Application {
         Scene mainScene = new Scene(root, 750, 700);
 
         /* top box things */
-
+        Insets topPadding = new Insets(10,10,10,10);
         //we create a HBox for the top called topSection
         HBox topSection = new HBox(10);
         topSection.setHgrow(topSection, ALWAYS);
         HBox rightTopSection = new HBox(10);
         rightTopSection.setHgrow(rightTopSection,ALWAYS);
+        topSection.setPadding(topPadding);
 
         //we set topSection to be the top in our boarderPane
 
