@@ -19,11 +19,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Database = new DatabaseConnection("../MusicPlayerDataBase.db");
 
+        //we create a VBox called root, so we can stack the menu bar above the boarder pane!
+        VBox root = new VBox();
+
         //borderRoot is our borderpane
         BorderPane borderRoot = new BorderPane();
 
-        //we create a VBox called root, so we can stack the menu bar above the boarder pane!
-        VBox root = new VBox();
 
         //we set the title of the window
         primaryStage.setTitle("Music Player");
@@ -31,7 +32,6 @@ public class Main extends Application {
         //we create a new scene where our boarderpane is the main pane
         Scene mainScene = new Scene(root, 750, 700);
 
-        /* top box things */
         Insets topPadding = new Insets(10,10,10,10);
         //we create a HBox for the top called topSection
         HBox topSection = new HBox(10);
@@ -53,13 +53,20 @@ public class Main extends Application {
         //we add the menu bar to topSection
         root.getChildren().add(topMenu);
 
-        //buttons
+        /*Text Field*/
+        TextField SearchField = new TextField();
+
+        /*buttons*/
         Button audioButton = new Button("Audio");
         //audioButton.getStyleClass().add("top_button");
         Button videoButton = new Button("Video");
         //videoButton.getStyleClass().add("top_button");
-
         Button searchButton =  new Button("Search");
+
+        /*Left Stuff*/
+        VBox leftSection = new VBox();
+
+        //////////////////finish this//////////////////
 
         /*Alignment for the top section buttons*/
         topSection.setAlignment(Pos.TOP_CENTER);
@@ -67,6 +74,7 @@ public class Main extends Application {
         videoButton.setAlignment(Pos.CENTER_RIGHT);
         //adding to the scene
         topSection.getChildren().add(searchButton);
+        topSection.getChildren().add(SearchField);
         rightTopSection.getChildren().add(audioButton);
         rightTopSection.getChildren().add(videoButton);
 

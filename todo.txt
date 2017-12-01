@@ -1,5 +1,5 @@
 TODO:
-padding to buttons n stuff
+padding to everything
 
 left pane:
 -vbox
@@ -13,7 +13,7 @@ center pane:
 -table view
 
 top pane
--search field aligned left
+-textfield for search overlapped by button
 
 
 Add styles to buttons
