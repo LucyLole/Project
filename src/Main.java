@@ -16,6 +16,7 @@ import java.io.IOException;
 import static javafx.scene.layout.Priority.ALWAYS;
 
 public class Main extends Application {
+    private int currentSong; //keeps track of the current selected song, based on the songID
     public static DatabaseConnection Database;
     //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
 
@@ -25,7 +26,7 @@ public class Main extends Application {
         VBox playbackRoot = new VBox();
         Scene playbackScene = new Scene(playbackRoot,650,600);
 
-        ImageView albumArt = new ImageView(currentSong.getArtwork);
+        ImageView albumArt = new ImageView(/* This needs to be retreiving albumart filepath from DB using current song as ID*/);
 
 
         playbackWindow.setScene(playbackScene);
@@ -56,7 +57,7 @@ public class Main extends Application {
         HBox rightTopSection = new HBox(10);
         HBox.setHgrow(rightTopSection,ALWAYS);
         topSection.setPadding(topPadding);
-        StackPane leftStackPane = new StackPane();
+        Pane leftPane = new Pane();
 
         //we set topSection to be the top in our boarderPane
 
@@ -97,13 +98,13 @@ public class Main extends Application {
         //leftSection.getChildren().addAll(addButton,editButton,deleteButton);
 
         Button playButton = new Button("Play");
+        playButton.setAlignment(Pos.BOTTOM_CENTER);
 
         //adding the buttons to the top vbox
         //botLeftSection.getChildren().addAll(playButton);
         VBox.setVgrow(leftSection,ALWAYS);
-        leftStackPane.getChildren().addAll(addButton,editButton,deleteButton,playButton);
-        leftStackPane.maxHeight(leftStackPane.getMaxHeight());
-        leftStackPane.setAlignment(playButton,Pos.BOTTOM_CENTER);
+        leftPane.getChildren().addAll(addButton,editButton,deleteButton,playButton);
+        leftPane.maxHeight(leftPane.getMaxHeight());
 
 
 
@@ -125,7 +126,7 @@ public class Main extends Application {
         root.getChildren().add(borderRoot);
 
         borderRoot.setTop(topSection);
-        borderRoot.setLeft(leftStackPane);
+        borderRoot.setLeft(leftPane);
         //initialising
         primaryStage.setScene(mainScene);
         primaryStage.show();
