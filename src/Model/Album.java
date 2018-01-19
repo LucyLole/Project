@@ -7,10 +7,12 @@ class Album {
     private int releaseYear;
     private String albumGenre;
 
-    public Album(int albumID, int artistID, String albumName) {
+    public Album(int albumID, int artistID, String albumName, int releaseYear, String albumGenre) {
         this.albumID = albumID;
         this.artistID = artistID;
         this.albumName = albumName;
+        this.releaseYear = releaseYear;
+        this.albumGenre = albumGenre;
     }
 
     public int getAlbumID() {
