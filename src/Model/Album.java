@@ -47,5 +47,4 @@ class Album {
         this.albumGenre = albumGenre;
     }
 
-    //test string
 }
