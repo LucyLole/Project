@@ -22,3 +22,11 @@ Add styles to buttons
 -pressed
 
 Add style to top bar
+
+
+playback window:
+-voleume ontrols
+-progress controls
+-album art
+-pause/play
+-forward/back
