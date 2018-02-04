@@ -1,31 +1,23 @@
 TODO:
-padding to everything
+make everything do something
+
+recursive search
 
 left pane:
--vbox
---add
---delete
---edit
---padding
---play button
+--play button to triangle
 
 center pane:
 -table view
 
 top pane
--textfield for search overlapped by button
+-make search work
 
-
-Add styles to buttons
--default
--hover
--pressed
-
-Add style to top bar
-
+Stylesheet
+-textfield
+-tableview
 
 playback window:
--voleume ontrols
+-voleume controls
 -progress controls
 -album art
 -pause/play

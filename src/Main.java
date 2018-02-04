@@ -13,14 +13,14 @@ import javafx.stage.Stage;
 import Model.DatabaseConnection;
 import static javafx.scene.layout.Priority.ALWAYS;
 import java.io.IOException;
-
+import java.util.Arrays;
 
 
 public class Main extends Application {
     private int currentSong; //keeps track of the current selected song, based on the songID
      //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
 
-    public void playWindow() {
+    private void playWindow() {
         Stage playbackWindow = new Stage();
         playbackWindow.setTitle("Playback Window");
         VBox playbackRoot = new VBox();
@@ -33,7 +33,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage libraryStage) throws Exception {
+    public void start(Stage libraryStage) {
         DatabaseConnection Database = Controller.ConnectToDB();
 
         //we stop the window from being resized as it would mess up the layout of elements
@@ -48,7 +48,7 @@ public class Main extends Application {
         //we set the title of the window
         libraryStage.setTitle("Music Player");
 
-        //we create a new scene where our boarderpane is the main pane
+        //we create a new scene where our borderpane is the main pane
         Scene mainScene = new Scene(root, 750, 700);
 
 
@@ -58,7 +58,7 @@ public class Main extends Application {
         HBox topSection = new HBox(10);
         //setting the space between top elements
         HBox.setHgrow(topSection, ALWAYS);
-        //creating the hbox to hold the search bar elements
+        //creating the HBox to hold the search bar elements
         HBox rightTopSection = new HBox(10);
         //giving extra space to right section
         HBox.setHgrow(rightTopSection,ALWAYS);
@@ -92,9 +92,11 @@ public class Main extends Application {
         /*Left Section*/
         //creating the left vbox
         VBox leftSection = new VBox(10);
-        leftSection.setAlignment(Pos.TOP_CENTER);
+        leftSection.setPrefWidth(200);
+        //leftSection.setAlignment(Pos.BOTTOM_LEFT);
         //creating the vbox to hold the add, delete and edit buttons
         VBox ADEbuttons = new VBox(10);
+        //ADEbuttons.setPadding(topPadding);
 
         /*left Section Buttons*/
         Button addButton = new Button("Add");
@@ -102,17 +104,22 @@ public class Main extends Application {
         Button deleteButton = new Button("Delete");
         Button playButton = new Button("Play");
 
-        //adding the buttons to the
+        //adding the buttons to the VBox
         VBox.setVgrow(ADEbuttons,ALWAYS);
         ADEbuttons.getChildren().addAll(addButton,editButton,deleteButton);
         leftSection.getChildren().addAll(ADEbuttons,playButton);
         leftSection.setPrefHeight(mainScene.getHeight() -100);
 
-        /*Alignment for the top section buttons*/
-        playButton.setAlignment(Pos.BOTTOM_CENTER);
-        topSection.setAlignment(Pos.TOP_CENTER);
-        audioButton.setAlignment(Pos.CENTER_RIGHT);
-        videoButton.setAlignment(Pos.CENTER_RIGHT);
+        /*Alignment and sizing for the buttons*/
+        double leftWidth = 55;
+        //applying the style and sizing to all buttons on the main screen
+        for (Button b : Arrays.asList(addButton, deleteButton, searchButton, audioButton, videoButton,
+            editButton, playButton)) {
+            b.getStyleClass().add("library-buttons");
+            b.setPrefWidth(leftWidth);
+        }
+        playButton.setPrefHeight(55);
+        leftSection.setPadding(topPadding);
 
         //adding to the top boxes
         topSection.getChildren().add(searchButton);

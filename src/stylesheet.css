@@ -1,19 +1,36 @@
-.top_button {
-    -fx-padding: 3 30 3 30;
-    -fx-text-fill: black;
-    -fx-font-size: 14px;
-    -fx-font-family: sans-serif;
-    -fx-border-colour: DARKSLATEGREY;
-
+.library-buttons {
+    -fx-font: 12px sans-serif;
     -fx-background-color:
-        #dd7e6b,
-        linear-gradient(#fafdfe, #dd7e6b),
-        linear-gradient(#eaf6fd 100%, #d9f0fc 49%, #bee6fd 50%, #a7d9f5 100%);
-
+        linear-gradient(#f2f2f2, #d6d6d6),
+        linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
+        linear-gradient(#dddddd 0%, #f6f6f6 50%);
+    -fx-background-radius: 8,7,6;
     -fx-background-insets: 0,1,2;
-    -fx-background-radius: 3,2,1;
-
+    -fx-text-fill: black;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }
-.top_button:hover {
-    -fx-background-color: #dd7e6b;
+
+.library-buttons:hover {
+    -fx-background-color:
+        linear-gradient(#f2f2f2, #d6d6d6),
+        linear-gradient(#fcfcfc 0%, #d9d9d9 10%, #d6d6d6 50%),
+        linear-gradient(#cccccc 20%, #f6f6f6 70%);
+}
+
+.library-buttons:pressed {
+    -fx-background-color:
+        linear-gradient(#f2f2f2, #d6d6d6),
+        linear-gradient(#fcfcfc 0%, #d9d9d9 10%, #d6d6d6 50%),
+        linear-gradient(#bbbbbb 20%, #e6e6e6 70%);
+}
+
+.library-buttons:focused {
+    -fx-effect: dropshadow( three-pass-box , rgba(221,126,107,1) , 8, 0.5 , 0 , 1 );
+}
+
+.library-buttons:disabled {
+    -fx-background-color:
+        linear-gradient(#e2e2e2, #c6c6c6),
+        linear-gradient(#ececec 0%, #c9c9c9 10%, #c6c6c6 50%),
+        linear-gradient(#aaaaaa 20%, #b6b6b6 70%);
 }
