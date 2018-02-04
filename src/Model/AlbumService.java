@@ -37,12 +37,12 @@ public class AlbumService {
 
         Album result = null;
 
-        PreparedStatement statement = database.newStatement("SELECT * FROM Albums WHERE AlbumID = ?");
+        PreparedStatement selectStatement = database.newStatement("SELECT AlbumID, ArtistID, AlbumName, ReleaseYear, Genre, ArtworkFilePath FROM Albums WHERE AlbumID = ?");
 
         try {
-            if (statement != null) {
-                statement.setInt(1, AlbumID);
-                ResultSet results = database.executeQuery(statement);
+            if (selectStatement != null) {
+                selectStatement.setInt(1, AlbumID);
+                ResultSet results = database.executeQuery(selectStatement);
 
                 if (results != null) {
                     result = new Album(
@@ -64,6 +64,7 @@ public class AlbumService {
     }
 
     public static void save(Album itemToSave, DatabaseConnection database) {
+
         Album existingItem = null;
         if (itemToSave.getAlbumID() != 0) existingItem = selectById(itemToSave.getAlbumID(), database);
 

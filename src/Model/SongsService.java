@@ -33,6 +33,43 @@ public class SongsService {
         }
     }
 
+    public static void selectForTable(List<SongsView> targetList, DatabaseConnection database) {
+        //thiss method will bring everything together to be put into our table view on the main window
+        PreparedStatement statement = database.newStatement(
+                "SELECT Songs.SongID As 'id', Songs.SongName As 'sName', Artist.ArtistName As 'aName', " +
+                        " Albums.AlbumName As 'a2Name', Songs.SongGenre As 'genre', Albums.ReleaseYear As 'year', Songs.SongLength As 'length' FROM Songs" +
+                        " LEFT OUTER JOIN Artist ON Songs.ArtistID = Artist.ArtistID" +
+                        " LEFT OUTER JOIN Albums ON Songs.AlbumID = Albums.AlbumID" +
+                        " ORDER BY Songs.SongName"
+        );
+
+        try {
+            if (statement != null) {
+
+                ResultSet results = database.executeQuery(statement);
+
+                if (results != null) {
+                    while (results.next()) {
+                        targetList.add(new SongsView(
+                                results.getInt("id"),
+                                results.getString("sName"),
+                                results.getString("aName"),
+                                results.getString("a2Name"),
+                                results.getString("genre"),
+                                results.getInt("year"),
+                                results.getFloat("length")
+                        ));
+                    }
+                }
+            }
+        } catch (SQLException resultsException) {
+            System.out.println("Database select all error (select for table): " + resultsException.getMessage());
+        }
+
+
+
+    }
+
     public static Songs selectById(int SongID, DatabaseConnection database) {
 
         Songs result = null;

@@ -25,6 +25,9 @@ public class Main extends Application {
      //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
     private static Controller controller;
     private static DatabaseConnection database;
+
+    private static TableView<SongsView> songsTable = new TableView<>();
+
     private void playWindow() {
         Stage playbackWindow = new Stage();
         playbackWindow.setTitle("Playback Window");
@@ -39,9 +42,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage libraryStage) throws Exception {
-        controller = new Controller();
-        //database = controller.ConnectToDB();
-        TableView<SongsView> audioTable = new TableView<>();
+        controller = new Controller(songsTable);
+        database = new DatabaseConnection("MusicPlayerDatabase.db");
 
         //we stop the window from being resized as it would mess up the layout of elements
         libraryStage.setResizable(false);
@@ -75,67 +77,67 @@ public class Main extends Application {
 
 
         /*Table View Stuff*/
-        audioTable.setPrefSize(665,590);
+        songsTable.setPrefSize(665,590);
         Pane centerPane = new Pane();
         borderRoot.setCenter(centerPane);
-        centerPane.getChildren().add(audioTable);
+        centerPane.getChildren().add(songsTable);
 
         //song number column
         TableColumn<SongsView, String> songsNumberColumn = new TableColumn<>("#");
-        songsNumberColumn.setCellValueFactory(new PropertyValueFactory<>("#"));
+        songsNumberColumn.setCellValueFactory(new PropertyValueFactory<>("SongID"));
         //setting the size of the column
         songsNumberColumn.prefWidthProperty().setValue(40);
         //adding name column to the tableview
-        audioTable.getColumns().add(songsNumberColumn);
+        songsTable.getColumns().add(songsNumberColumn);
 
 
         //creating the name column
         TableColumn<SongsView, String> songsNameColumn = new TableColumn<>("Name");
-        songsNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        songsNameColumn.setCellValueFactory(new PropertyValueFactory<>("SongName"));
         //setting the size of the column
         songsNameColumn.prefWidthProperty().setValue(150);
         //adding number column to the tableview
-        audioTable.getColumns().add(songsNameColumn);
+        songsTable.getColumns().add(songsNameColumn);
 
         //creating the artist column
         TableColumn<SongsView, String> songsArtistColumn = new TableColumn<>("Artist");
-        songsArtistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        songsArtistColumn.setCellValueFactory(new PropertyValueFactory<>("ArtistName"));
         //setting the size of the column
         songsArtistColumn.prefWidthProperty().setValue(110);
         //adding artist column to the tableview
-        audioTable.getColumns().add(songsArtistColumn);
+        songsTable.getColumns().add(songsArtistColumn);
 
         //creating the album column
         TableColumn<SongsView, String> songsAlbumColumn = new TableColumn<>("Album");
-        songsAlbumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
+        songsAlbumColumn.setCellValueFactory(new PropertyValueFactory<>("AlbumName"));
         //setting the size of the column
         songsAlbumColumn.prefWidthProperty().setValue(110);
         //adding artist column to the tableview
-        audioTable.getColumns().add(songsAlbumColumn);
+        songsTable.getColumns().add(songsAlbumColumn);
 
         //creating the genre column
         TableColumn<SongsView, String> songsGenreColumn = new TableColumn<>("Genre");
-        songsGenreColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
+        songsGenreColumn.setCellValueFactory(new PropertyValueFactory<>("SongGenre"));
         //setting the size of the column
         songsGenreColumn.prefWidthProperty().setValue(90);
         //adding artist column to the tableview
-        audioTable.getColumns().add(songsGenreColumn);
+        songsTable.getColumns().add(songsGenreColumn);
 
         //creating the year column
         TableColumn<SongsView, String> songsYearColumn = new TableColumn<>("Year");
-        songsYearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+        songsYearColumn.setCellValueFactory(new PropertyValueFactory<>("SongYear"));
         //setting the size of the column
         songsYearColumn.prefWidthProperty().setValue(90);
         //adding artist column to the tableview
-        audioTable.getColumns().add(songsYearColumn);
+        songsTable.getColumns().add(songsYearColumn);
 
         //creating the length column
         TableColumn<SongsView, String> songsLengthColumn = new TableColumn<>("Length");
-        songsLengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        songsLengthColumn.setCellValueFactory(new PropertyValueFactory<>("SongLength"));
         //setting the size of the column
         songsLengthColumn.prefWidthProperty().setValue(90);
         //adding artist column to the tableview
-        audioTable.getColumns().add(songsLengthColumn);
+        songsTable.getColumns().add(songsLengthColumn);
 
 
         //we add the stylesheet to the scene
@@ -214,21 +216,34 @@ public class Main extends Application {
         libraryStage.show();
 
 
-        /* This is testing adding albums
-        Album TestAlb = new Album(5,0,"TestAlb",1999,"Classical",
+        //This is testing adding albums
+        /*
+        Album TestAlb = new Album(6,1,"TestAlb",1999,"Classical",
                 "/artwork/test.png");
         AlbumService.save(TestAlb, database);
         */
 
+        /*
+        Songs TestSong = new Songs(1,0,1,"../songs/test.mp3","TestSong",7.13f,"Classical");
+        SongsService.save(TestSong, database);
+        */
+
+        /*
+        Artist TestArtist = new Artist(0, "TestArtist");
+        ArtistService.save(TestArtist, database);
+        */
 
         ArrayList<Album> testlist = new ArrayList<>();
         AlbumService.selectAll(testlist,database);
 
-
+        Album test2 = AlbumService.selectById(2
+                ,database);
+        System.out.println(test2.toString());
+        /*
         for (Album a: testlist) {
             System.out.println(a);
         }
-
+        */
     }
 
 
