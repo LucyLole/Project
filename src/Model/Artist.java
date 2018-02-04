@@ -1,6 +1,6 @@
 package Model;
 
-class Artist {
+public class Artist {
     private int artistID;
     private String artistName;
 

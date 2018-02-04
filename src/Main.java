@@ -1,4 +1,5 @@
 
+import Model.SongsView;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -7,19 +8,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import Model.DatabaseConnection;
+import Model.*;
 import static javafx.scene.layout.Priority.ALWAYS;
-import java.io.IOException;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
 public class Main extends Application {
     private int currentSong; //keeps track of the current selected song, based on the songID
      //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
-
+    private static Controller controller;
+    private static DatabaseConnection database;
     private void playWindow() {
         Stage playbackWindow = new Stage();
         playbackWindow.setTitle("Playback Window");
@@ -33,8 +38,10 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage libraryStage) {
-        DatabaseConnection Database = Controller.ConnectToDB();
+    public void start(Stage libraryStage) throws Exception {
+        controller = new Controller();
+        //database = controller.ConnectToDB();
+        TableView<SongsView> audioTable = new TableView<>();
 
         //we stop the window from being resized as it would mess up the layout of elements
         libraryStage.setResizable(false);
@@ -64,6 +71,71 @@ public class Main extends Application {
         HBox.setHgrow(rightTopSection,ALWAYS);
         //giving my top elements thier padding values
         topSection.setPadding(topPadding);
+
+
+
+        /*Table View Stuff*/
+        audioTable.setPrefSize(665,590);
+        Pane centerPane = new Pane();
+        borderRoot.setCenter(centerPane);
+        centerPane.getChildren().add(audioTable);
+
+        //song number column
+        TableColumn<SongsView, String> songsNumberColumn = new TableColumn<>("#");
+        songsNumberColumn.setCellValueFactory(new PropertyValueFactory<>("#"));
+        //setting the size of the column
+        songsNumberColumn.prefWidthProperty().setValue(40);
+        //adding name column to the tableview
+        audioTable.getColumns().add(songsNumberColumn);
+
+
+        //creating the name column
+        TableColumn<SongsView, String> songsNameColumn = new TableColumn<>("Name");
+        songsNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        //setting the size of the column
+        songsNameColumn.prefWidthProperty().setValue(150);
+        //adding number column to the tableview
+        audioTable.getColumns().add(songsNameColumn);
+
+        //creating the artist column
+        TableColumn<SongsView, String> songsArtistColumn = new TableColumn<>("Artist");
+        songsArtistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        //setting the size of the column
+        songsArtistColumn.prefWidthProperty().setValue(110);
+        //adding artist column to the tableview
+        audioTable.getColumns().add(songsArtistColumn);
+
+        //creating the album column
+        TableColumn<SongsView, String> songsAlbumColumn = new TableColumn<>("Album");
+        songsAlbumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
+        //setting the size of the column
+        songsAlbumColumn.prefWidthProperty().setValue(110);
+        //adding artist column to the tableview
+        audioTable.getColumns().add(songsAlbumColumn);
+
+        //creating the genre column
+        TableColumn<SongsView, String> songsGenreColumn = new TableColumn<>("Genre");
+        songsGenreColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
+        //setting the size of the column
+        songsGenreColumn.prefWidthProperty().setValue(90);
+        //adding artist column to the tableview
+        audioTable.getColumns().add(songsGenreColumn);
+
+        //creating the year column
+        TableColumn<SongsView, String> songsYearColumn = new TableColumn<>("Year");
+        songsYearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+        //setting the size of the column
+        songsYearColumn.prefWidthProperty().setValue(90);
+        //adding artist column to the tableview
+        audioTable.getColumns().add(songsYearColumn);
+
+        //creating the length column
+        TableColumn<SongsView, String> songsLengthColumn = new TableColumn<>("Length");
+        songsLengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        //setting the size of the column
+        songsLengthColumn.prefWidthProperty().setValue(90);
+        //adding artist column to the tableview
+        audioTable.getColumns().add(songsLengthColumn);
 
 
         //we add the stylesheet to the scene
@@ -120,6 +192,7 @@ public class Main extends Application {
         }
         playButton.setPrefHeight(55);
         leftSection.setPadding(topPadding);
+        leftSection.setMaxWidth(75);
 
         //adding to the top boxes
         topSection.getChildren().add(searchButton);
@@ -139,6 +212,23 @@ public class Main extends Application {
         //settintg the stage to the current scene and showing
         libraryStage.setScene(mainScene);
         libraryStage.show();
+
+
+        /* This is testing adding albums
+        Album TestAlb = new Album(5,0,"TestAlb",1999,"Classical",
+                "/artwork/test.png");
+        AlbumService.save(TestAlb, database);
+        */
+
+
+        ArrayList<Album> testlist = new ArrayList<>();
+        AlbumService.selectAll(testlist,database);
+
+
+        for (Album a: testlist) {
+            System.out.println(a);
+        }
+
     }
 
 

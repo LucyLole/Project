@@ -1,13 +1,14 @@
 package Model;
 
-class Album {
+public class Album {
     private int albumID;
     private int artistID;
     private String albumName;
     private int releaseYear;
     private String albumGenre;
+    private String artworkFilePath;
 
-    public Album(int albumID, int artistID, String albumName, int releaseYear, String albumGenre) {
+    public Album(int albumID, int artistID, String albumName, int releaseYear, String albumGenre, String artworkFilePath) {
         this.albumID = albumID;
         this.artistID = artistID;
         this.albumName = albumName;
@@ -45,6 +46,14 @@ class Album {
 
     public void setAlbumGenre(String albumGenre) {
         this.albumGenre = albumGenre;
+    }
+
+    public String getArtworkFilePath() {
+        return artworkFilePath;
+    }
+
+    public void setArtworkFilePath(String artworkFilePath) {
+        this.artworkFilePath = artworkFilePath;
     }
 
 }

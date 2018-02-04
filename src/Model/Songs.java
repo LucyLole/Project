@@ -1,6 +1,6 @@
 package Model;
 
-class Songs {
+public class Songs {
     private int songID;
     private int artistID;
     private int albumID;
