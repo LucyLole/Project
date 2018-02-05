@@ -108,6 +108,23 @@ public class AlbumService {
         }
     }
 
+    public static int getArlbumIdFromName(String AlbumName, DatabaseConnection database) {
+        int id;
+        id = 0;
+        PreparedStatement statement = database.newStatement("SELECT AlbumID from Artist WHERE AlbumName = ?");
+        try {
+            if (statement != null) {
+                statement.setString(1, AlbumName);
+                ResultSet result  = database.executeQuery(statement);
+                id = result.getInt("AlbumID");
+            }
+
+        } catch (SQLException resultsException) {
+            System.out.println("Database name from ID error: " + resultsException.getMessage());
+        }
+        return id;
+    }
+
 
 
 }

@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -29,26 +30,28 @@ public class Main extends Application {
 
     private static TableView<SongsView> songsTable = new TableView<>();
 
-    private void playWindow() {
-        Stage playbackWindow = new Stage();
-        playbackWindow.setTitle("Playback Window");
-        VBox playbackRoot = new VBox();
-        Scene playbackScene = new Scene(playbackRoot,650,600);
-
-        ImageView albumArt = new ImageView(/* This needs to be retreiving albumart filepath from DB using current song as ID*/);
-
-        playbackWindow.setScene(playbackScene);
-        playbackWindow.show();
-    }
-
     @Override
     public void start(Stage libraryStage) throws Exception {
         controller = new Controller(songsTable);
         selectedSongID = 0;
         database = new DatabaseConnection("MusicPlayerDatabase.db");
 
+        //Loading our images
+        ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/playIcon.png")));
+        ImageView pauseIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/pauseIcon.png")));
+        ImageView forwardsIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/forwardIcon.png")));
+        ImageView backwardsIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/backwardsIcon.png")));
+        for (ImageView i : Arrays.asList(playIcon,pauseIcon,forwardsIcon,backwardsIcon)) {
+            i.setFitHeight(45);
+            i.setFitWidth(45);
+        }
+
+
+
+
         //we stop the window from being resized as it would mess up the layout of elements
         libraryStage.setResizable(false);
+        libraryStage.getIcons().add(new Image("/Images/playIcon.png"));
         //we create a VBox called root, so we can stack the menu bar above the boarder pane!
         VBox root = new VBox();
 
@@ -163,7 +166,6 @@ public class Main extends Application {
         Button videoButton = new Button("Video");
         Button searchButton =  new Button("Search");
         //giving the audio button its event to open the play window
-        audioButton.setOnAction((ActionEvent ae) -> playWindow());
 
         /*Left Section*/
         //creating the left vbox
@@ -178,8 +180,10 @@ public class Main extends Application {
         Button addButton = new Button("Add");
         Button editButton = new Button("Edit");
         Button deleteButton = new Button("Delete");
-        Button playButton = new Button("Play");
-        playButton.setOnAction((ActionEvent ae) -> controller.updateTable(selectedSongID));
+        Button playButton = new Button();
+        playButton.setGraphic(playIcon);
+        audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(selectedSongID));
+        playButton.setOnAction((ActionEvent ae) -> playWindow(playIcon, backwardsIcon, forwardsIcon, pauseIcon));
 
         //adding the buttons to the VBox
         VBox.setVgrow(ADEbuttons,ALWAYS);
@@ -221,6 +225,7 @@ public class Main extends Application {
 
         //This is testing adding albums
 
+        /*
         Album TestAlb = new Album(8,8,"TestAlb",1999,"Classical",
                 "/artwork/test.png");
         AlbumService.save(TestAlb, database);
@@ -242,11 +247,52 @@ public class Main extends Application {
         Album test2 = AlbumService.selectById(2
                 ,database);
         System.out.println(test2.toString());
+        */
         /*
         for (Album a: testlist) {
             System.out.println(a);
         }
         */
+    }
+
+    private void playWindow(ImageView playIcon, ImageView backwardsIcon, ImageView forwardsIcon,ImageView pauseIcon) {
+        Stage playbackWindow = new Stage();
+
+        playbackWindow.setTitle("Playback Window");
+        VBox playbackRoot = new VBox(10);
+        Scene playbackScene = new Scene(playbackRoot,650,600);
+        playbackScene.getStylesheets().add("stylesheet.css");
+        ImageView albumArt = new ImageView("/Images/defaultArt.jpg");
+        albumArt.setFitHeight(400);
+        albumArt.setFitWidth(400);
+        HBox nowPlaying  = new HBox(10);
+        HBox controlsBox  = new HBox(10);
+        Button back  = new Button();
+        back.setGraphic(backwardsIcon);
+        Button playPause  = new Button();
+        playPause.setGraphic(pauseIcon);
+        Button forward  = new Button();
+        forward.setGraphic(forwardsIcon);
+        Label playingInfo = new Label("Now Playing: ");
+        Slider volume = new Slider();
+        Slider progress = new Slider();
+
+        playbackWindow.getIcons().add(new Image("/Images/playIcon.png"));
+
+        for (Button b : Arrays.asList(back,playPause,forward)) {
+            b.getStyleClass().add("library-buttons");
+        }
+
+        nowPlaying.getChildren().addAll(playingInfo,volume);
+        controlsBox.getChildren().addAll(back,playPause,forward);
+
+        playbackRoot.getChildren().addAll(albumArt,nowPlaying,progress,controlsBox);
+        playbackRoot.setAlignment(Pos.CENTER);
+        controlsBox.setAlignment(Pos.CENTER);
+        nowPlaying.setAlignment(Pos.CENTER);
+
+        playbackWindow.setScene(playbackScene);
+        playbackWindow.show();
     }
 
 

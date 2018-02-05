@@ -108,4 +108,23 @@ public class ArtistService {
             System.out.println("Database saving error: " + resultsException.getMessage());
         }
     }
+
+
+    public static int getArtistIdFromName(String ArtistName, DatabaseConnection database) {
+        int id;
+        id = 0;
+        PreparedStatement statement = database.newStatement("SELECT ArtistID from Artist WHERE ArtistName = ?");
+        try {
+            if (statement != null) {
+                statement.setString(1, ArtistName);
+                ResultSet result  = database.executeQuery(statement);
+                id = result.getInt("ArtistID");
+            }
+
+        } catch (SQLException resultsException) {
+            System.out.println("Database name from ID error: " + resultsException.getMessage());
+        }
+        return id;
+    }
+
 }
