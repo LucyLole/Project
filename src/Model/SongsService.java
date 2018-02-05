@@ -147,6 +147,25 @@ public class SongsService {
         }
     }
 
+    public static String getFilePath(SongsView song, DatabaseConnection database) {
+        PreparedStatement statement = database.newStatement("SELECT FilePath FROM Songs WHERE SongID = ?");
+        String result =null;
+        try {
+            if (statement != null) {
+                statement.setInt(1,song.getSongID());
+                ResultSet resultRaw = database.executeQuery(statement);
+
+                if (resultRaw != null) {
+                    result = resultRaw.getString("FilePath");
+                }
+            }
+        } catch (SQLException resultsException) {
+            System.out.println("Database filepath get error: "+ resultsException.getMessage());
+        }
+        return result;
+
+    }
+
 
 
 }

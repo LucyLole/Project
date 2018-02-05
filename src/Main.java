@@ -12,28 +12,51 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import Model.DatabaseConnection;
 import Model.*;
+import javafx.stage.WindowEvent;
+
 import static javafx.scene.layout.Priority.ALWAYS;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
 public class Main extends Application {
     private int currentSong; //keeps track of the current selected song, based on the songID
-    private int selectedSongID;
-     //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
+
+    private boolean playWindowShowing = false;
+
     private static Controller controller;
     private static DatabaseConnection database;
 
+    public static MediaPlayer songPlayer = null;
+    public SongsView selectedSong;
+
     private static TableView<SongsView> songsTable = new TableView<>();
 
+    public void playSong() {
+        selectedSong = songsTable.getSelectionModel().getSelectedItem();
+        if (selectedSong != null) {
+            File songFile = new File(SongsService.getFilePath(selectedSong, database));
+            if (songFile.isFile()) {
+                Media songMedia = new Media(songFile.toURI().toString());
+                songPlayer = new MediaPlayer(songMedia);
+                songPlayer.play();
+            } else {
+                System.out.println("File error.");
+            }
+        }
+    }
+
     @Override
-    public void start(Stage libraryStage) throws Exception {
+    public void start(Stage libraryStage) {
         controller = new Controller(songsTable);
-        selectedSongID = 0;
         database = new DatabaseConnection("MusicPlayerDatabase.db");
 
         //Loading our images
@@ -45,8 +68,6 @@ public class Main extends Application {
             i.setFitHeight(45);
             i.setFitWidth(45);
         }
-
-
 
 
         //we stop the window from being resized as it would mess up the layout of elements
@@ -182,8 +203,16 @@ public class Main extends Application {
         Button deleteButton = new Button("Delete");
         Button playButton = new Button();
         playButton.setGraphic(playIcon);
-        audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(selectedSongID));
-        playButton.setOnAction((ActionEvent ae) -> playWindow(playIcon, backwardsIcon, forwardsIcon, pauseIcon));
+        audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(0));
+        playButton.setOnAction((ActionEvent ae) -> {
+            playSong();
+
+            if (!playWindowShowing) {
+                playWindow();
+            }
+
+
+        });
 
         //adding the buttons to the VBox
         VBox.setVgrow(ADEbuttons,ALWAYS);
@@ -255,14 +284,27 @@ public class Main extends Application {
         */
     }
 
-    private void playWindow(ImageView playIcon, ImageView backwardsIcon, ImageView forwardsIcon,ImageView pauseIcon) {
+    public void playWindow() {
+
         Stage playbackWindow = new Stage();
+
+        ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/playIcon.png")));
+        ImageView pauseIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/pauseIcon.png")));
+        ImageView forwardsIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/forwardIcon.png")));
+        ImageView backwardsIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/backwardsIcon.png")));
+        for (ImageView i : Arrays.asList(playIcon, pauseIcon, forwardsIcon, backwardsIcon)) {
+            i.setFitHeight(45);
+            i.setFitWidth(45);
+        }
 
         playbackWindow.setTitle("Playback Window");
         VBox playbackRoot = new VBox(10);
-        Scene playbackScene = new Scene(playbackRoot,650,600);
+        Scene playbackScene = new Scene(playbackRoot, 650, 600);
         playbackScene.getStylesheets().add("stylesheet.css");
         ImageView albumArt = new ImageView("/Images/defaultArt.jpg");
+        if (selectedSong != null && AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database) != null) {
+            albumArt = new ImageView(new Image (new File(AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database)).toURI().toString()));
+        }
         albumArt.setFitHeight(400);
         albumArt.setFitWidth(400);
         HBox nowPlaying  = new HBox(10);
@@ -271,6 +313,19 @@ public class Main extends Application {
         back.setGraphic(backwardsIcon);
         Button playPause  = new Button();
         playPause.setGraphic(pauseIcon);
+
+
+        playPause.setOnAction((ActionEvent ae) -> {
+            controller.playButtonPressed();
+            if (songPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                playPause.setGraphic(playIcon);
+            }
+            else {
+                playPause.setGraphic(pauseIcon);
+            }
+        });
+
+
         Button forward  = new Button();
         forward.setGraphic(forwardsIcon);
         Label playingInfo = new Label("Now Playing: ");
@@ -290,9 +345,17 @@ public class Main extends Application {
         playbackRoot.setAlignment(Pos.CENTER);
         controlsBox.setAlignment(Pos.CENTER);
         nowPlaying.setAlignment(Pos.CENTER);
+        playbackWindow.setResizable(false);
 
         playbackWindow.setScene(playbackScene);
         playbackWindow.show();
+        playWindowShowing = true;
+
+        playbackWindow.setOnCloseRequest((WindowEvent we) -> playWindowShowing = false);
+
+
+
+
     }
 
 

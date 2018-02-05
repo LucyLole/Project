@@ -108,10 +108,10 @@ public class AlbumService {
         }
     }
 
-    public static int getArlbumIdFromName(String AlbumName, DatabaseConnection database) {
+    public static int getAlbumIdFromName(String AlbumName, DatabaseConnection database) {
         int id;
         id = 0;
-        PreparedStatement statement = database.newStatement("SELECT AlbumID from Artist WHERE AlbumName = ?");
+        PreparedStatement statement = database.newStatement("SELECT AlbumID from Album WHERE AlbumName = ?");
         try {
             if (statement != null) {
                 statement.setString(1, AlbumName);
@@ -120,9 +120,27 @@ public class AlbumService {
             }
 
         } catch (SQLException resultsException) {
-            System.out.println("Database name from ID error: " + resultsException.getMessage());
+            System.out.println("Database ID from name error: " + resultsException.getMessage());
         }
         return id;
+    }
+
+
+    public static String getAlbumArtFromName(String AlbumName, DatabaseConnection database) {
+        String filePath;
+        filePath = null;
+        PreparedStatement statement = database.newStatement("SELECT ArtworkFilePath from Albums WHERE AlbumName = ?");
+        try {
+            if (statement != null) {
+                statement.setString(1, AlbumName);
+                ResultSet result  = database.executeQuery(statement);
+                filePath = result.getString("ArtworkFilePath");
+            }
+
+        } catch (SQLException resultsException) {
+            System.out.println("Database art from name error: " + resultsException.getMessage());
+        }
+        return filePath;
     }
 
 

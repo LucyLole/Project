@@ -2,6 +2,10 @@ import Model.DatabaseConnection;
 import Model.*;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableView;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -37,6 +41,17 @@ public class Controller {
                     songsTable.scrollTo(n);
                     break;
                 }
+            }
+        }
+    }
+
+    public void playButtonPressed() {
+        if (Main.songPlayer != null) {
+            if (Main.songPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                Main.songPlayer.pause();
+            }
+            else if (Main.songPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+                Main.songPlayer.play();
             }
         }
     }
