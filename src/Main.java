@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 public class Main extends Application {
     private int currentSong; //keeps track of the current selected song, based on the songID
+    private int selectedSongID;
      //DatabaseConnection.DatabaseConnection("../MusicPlayerDatabase.db");
     private static Controller controller;
     private static DatabaseConnection database;
@@ -43,6 +44,7 @@ public class Main extends Application {
     @Override
     public void start(Stage libraryStage) throws Exception {
         controller = new Controller(songsTable);
+        selectedSongID = 0;
         database = new DatabaseConnection("MusicPlayerDatabase.db");
 
         //we stop the window from being resized as it would mess up the layout of elements
@@ -177,6 +179,7 @@ public class Main extends Application {
         Button editButton = new Button("Edit");
         Button deleteButton = new Button("Delete");
         Button playButton = new Button("Play");
+        playButton.setOnAction((ActionEvent ae) -> controller.updateTable(selectedSongID));
 
         //adding the buttons to the VBox
         VBox.setVgrow(ADEbuttons,ALWAYS);
@@ -217,21 +220,21 @@ public class Main extends Application {
 
 
         //This is testing adding albums
-        /*
-        Album TestAlb = new Album(6,1,"TestAlb",1999,"Classical",
+
+        Album TestAlb = new Album(8,8,"TestAlb",1999,"Classical",
                 "/artwork/test.png");
         AlbumService.save(TestAlb, database);
-        */
 
-        /*
-        Songs TestSong = new Songs(1,0,1,"../songs/test.mp3","TestSong",7.13f,"Classical");
+
+
+        Songs TestSong = new Songs(0,8,8,"../songs/test.mp3","TestSong",7.13f,"Classical");
         SongsService.save(TestSong, database);
-        */
 
-        /*
-        Artist TestArtist = new Artist(0, "TestArtist");
+
+
+        Artist TestArtist = new Artist(8, "TestArtist");
         ArtistService.save(TestArtist, database);
-        */
+
 
         ArrayList<Album> testlist = new ArrayList<>();
         AlbumService.selectAll(testlist,database);
