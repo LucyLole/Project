@@ -1,12 +1,7 @@
 TODO:
-make everything do something
 
 recursive search
 
-left pane:
---play button to triangle
-
-center pane:
 
 top pane
 -make search work
@@ -14,6 +9,4 @@ top pane
 Stylesheet
 -textfield
 -tableview
-
-playback window:
-
+-popout window

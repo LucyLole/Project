@@ -5,6 +5,9 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -47,6 +50,7 @@ public class Main extends Application {
     public static MediaPlayer songPlayer = null;
     public SongsView selectedSong;
 
+
     private static TableView<SongsView> songsTable = new TableView<>();
 
     public void playSong() {
@@ -65,8 +69,8 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage libraryStage) {
-        controller = new Controller(songsTable);
+    public void start(Stage libraryStage) throws IOException {
+        controller = new Controller(songsTable, libraryStage);
         database = new DatabaseConnection("MusicPlayerDatabase.db");
 
 
@@ -110,6 +114,8 @@ public class Main extends Application {
         HBox.setHgrow(rightTopSection,ALWAYS);
         //giving my top elements thier padding values
         topSection.setPadding(topPadding);
+
+
 
 
 
@@ -177,6 +183,11 @@ public class Main extends Application {
         songsTable.getColumns().add(songsLengthColumn);
 
 
+
+
+
+
+
         //we add the stylesheet to the scene
         mainScene.getStylesheets().add("stylesheet.css");
         //we create a new menuBar called topMenu and add its options
@@ -190,7 +201,11 @@ public class Main extends Application {
 
         /*Text Field*/
         //we create the text field element for our search bar
-        TextField SearchField = new TextField();
+        TextField searchField = new TextField();
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            controller.updateTable(0,newValue);
+                });
+
 
         /*buttons*/
         //adding our top section buttons
@@ -214,7 +229,8 @@ public class Main extends Application {
         Button deleteButton = new Button("Delete");
         Button playButton = new Button();
         playButton.setGraphic(playIcon);
-        audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(0));
+        deleteButton.setOnAction((ActionEvent ae) -> controller.onDeltePressed());
+        audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(0,searchField.getText()));
         playButton.setOnAction((ActionEvent ae) -> {
 
             playSong();
@@ -223,6 +239,16 @@ public class Main extends Application {
                 playWindow();
             }
         });
+
+        addButton.setOnAction((ActionEvent ae) -> {
+            try {
+                controller.addButtonPressed();
+            } catch (Exception io) {
+                System.out.println("File open error :" + io.getMessage());
+            }
+                });
+
+        searchButton.setDisable(true);
 
         //adding the buttons to the VBox
         VBox.setVgrow(ADEbuttons,ALWAYS);
@@ -244,7 +270,7 @@ public class Main extends Application {
 
         //adding to the top boxes
         topSection.getChildren().add(searchButton);
-        topSection.getChildren().add(SearchField);
+        topSection.getChildren().add(searchField);
         rightTopSection.getChildren().add(audioButton);
         rightTopSection.getChildren().add(videoButton);
         topSection.getChildren().add(rightTopSection);
