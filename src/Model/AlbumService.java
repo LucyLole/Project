@@ -80,15 +80,15 @@ public class AlbumService {
                 database.executeUpdate(statement);
             }
             else {
-                PreparedStatement statement = database.newStatement("UPDATE Albums SET ArtistID = ?, AlbumName = ?, ReleaseYear = ?," +
+                PreparedStatement statement2 = database.newStatement("UPDATE Albums SET ArtistID = ?, AlbumName = ?, ReleaseYear = ?," +
                         " Genre = ?, ArtworkFilePath = ? WHERE AlbumID = ?");
-                statement.setInt(1,itemToSave.getArtistID());
-                statement.setString(2, itemToSave.getAlbumName());
-                statement.setInt(3, itemToSave.getReleaseYear());
-                statement.setString(4, itemToSave.getAlbumGenre());
-                statement.setString(5, itemToSave.getArtworkFilePath());
-                statement.setInt(6, itemToSave.getAlbumID());
-                database.executeUpdate(statement);
+                statement2.setInt(1,itemToSave.getArtistID());
+                statement2.setString(2, itemToSave.getAlbumName());
+                statement2.setInt(3, itemToSave.getReleaseYear());
+                statement2.setString(4, itemToSave.getAlbumGenre());
+                statement2.setString(5, itemToSave.getArtworkFilePath());
+                statement2.setInt(6, itemToSave.getAlbumID());
+                database.executeUpdate(statement2);
             }
         } catch (SQLException resultsException) {
             System.out.println("Database saving error: " + resultsException.getMessage());
@@ -116,11 +116,13 @@ public class AlbumService {
             if (statement != null) {
                 statement.setString(1, AlbumName);
                 ResultSet result  = database.executeQuery(statement);
-                id = result.getInt("AlbumID");
+                while (result.next()) {
+                    id = result.getInt("AlbumID");
+                }
             }
 
         } catch (SQLException resultsException) {
-            System.out.println("Database ID from name error: " + resultsException.getMessage());
+            System.out.println("(AlbumService) Database ID from name error: " + resultsException.getMessage());
         }
         return id;
     }
@@ -142,6 +144,20 @@ public class AlbumService {
         }
         return filePath;
     }
+
+    public static void setAlbumArtowkrFromID(int AlbumID, String ArtworkFilePath,DatabaseConnection database) {
+        PreparedStatement statement = database.newStatement("UPDATE Albums SET ArtworkFilePath = ? WHERE AlbumID = ?");
+
+        try {
+            if (statement != null) {
+                statement.setString(1,ArtworkFilePath);
+                statement.setInt(2,AlbumID);
+                database.executeUpdate(statement);
+            }
+        } catch (SQLException resultsException) {
+            System.out.println("Database ID from art error: " + resultsException.getMessage());
+        }
+}
 
 
 

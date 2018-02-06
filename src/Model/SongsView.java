@@ -9,9 +9,9 @@ public class SongsView {
     private final SimpleStringProperty AlbumName;
     private final SimpleStringProperty SongGenre;
     private int SongYear;
-    private Float SongLength;
+    private String SongLength;
 
-    public SongsView(int SongID, String SongName, String ArtistName, String AlbumName, String SongGenre, int SongYear, Float SongLength) {
+    public SongsView(int SongID, String SongName, String ArtistName, String AlbumName, String SongGenre, int SongYear, String SongLength) {
         this.SongID = SongID;
         this.SongName = new SimpleStringProperty(SongName);
         this.ArtistName = new SimpleStringProperty(ArtistName);
@@ -45,7 +45,7 @@ public class SongsView {
         return SongYear;
     }
 
-    public Float getSongLength() {
+    public String getSongLength() {
         return SongLength;
     }
 }

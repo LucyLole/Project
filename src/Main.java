@@ -45,7 +45,7 @@ public class Main extends Application {
     private boolean playWindowShowing = false;
 
     private static Controller controller;
-    private static DatabaseConnection database;
+    public static DatabaseConnection database;
 
     public static MediaPlayer songPlayer = null;
     public SongsView selectedSong;
@@ -70,8 +70,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage libraryStage) throws IOException {
-        controller = new Controller(songsTable, libraryStage);
         database = new DatabaseConnection("MusicPlayerDatabase.db");
+
+        controller = new Controller(songsTable, libraryStage);
+
+
+
 
 
         //Loading our images
@@ -119,24 +123,27 @@ public class Main extends Application {
 
 
 
-        /*Table View Stuff*/
+        //Table View Stuff
         songsTable.setPrefSize(665,590);
         Pane centerPane = new Pane();
         borderRoot.setCenter(centerPane);
         centerPane.getChildren().add(songsTable);
 
-        //song number column
+        /*
+        //song number column/*
         TableColumn<SongsView, String> songsNumberColumn = new TableColumn<>("#");
         songsNumberColumn.setCellValueFactory(new PropertyValueFactory<>("SongID"));
+        songsNumberColumn.setResizable(false);
         //setting the size of the column
         songsNumberColumn.prefWidthProperty().setValue(40);
         //adding name column to the tableview
         songsTable.getColumns().add(songsNumberColumn);
-
+        */
 
         //creating the name column
         TableColumn<SongsView, String> songsNameColumn = new TableColumn<>("Name");
         songsNameColumn.setCellValueFactory(new PropertyValueFactory<>("SongName"));
+        songsNameColumn.setResizable(false);
         //setting the size of the column
         songsNameColumn.prefWidthProperty().setValue(150);
         //adding number column to the tableview
@@ -145,6 +152,7 @@ public class Main extends Application {
         //creating the artist column
         TableColumn<SongsView, String> songsArtistColumn = new TableColumn<>("Artist");
         songsArtistColumn.setCellValueFactory(new PropertyValueFactory<>("ArtistName"));
+        songsArtistColumn.setResizable(false);
         //setting the size of the column
         songsArtistColumn.prefWidthProperty().setValue(110);
         //adding artist column to the tableview
@@ -153,6 +161,7 @@ public class Main extends Application {
         //creating the album column
         TableColumn<SongsView, String> songsAlbumColumn = new TableColumn<>("Album");
         songsAlbumColumn.setCellValueFactory(new PropertyValueFactory<>("AlbumName"));
+        songsAlbumColumn.setResizable(false);
         //setting the size of the column
         songsAlbumColumn.prefWidthProperty().setValue(110);
         //adding artist column to the tableview
@@ -161,6 +170,7 @@ public class Main extends Application {
         //creating the genre column
         TableColumn<SongsView, String> songsGenreColumn = new TableColumn<>("Genre");
         songsGenreColumn.setCellValueFactory(new PropertyValueFactory<>("SongGenre"));
+        songsGenreColumn.setResizable(false);
         //setting the size of the column
         songsGenreColumn.prefWidthProperty().setValue(90);
         //adding artist column to the tableview
@@ -169,6 +179,7 @@ public class Main extends Application {
         //creating the year column
         TableColumn<SongsView, String> songsYearColumn = new TableColumn<>("Year");
         songsYearColumn.setCellValueFactory(new PropertyValueFactory<>("SongYear"));
+        songsYearColumn.setResizable(false);
         //setting the size of the column
         songsYearColumn.prefWidthProperty().setValue(90);
         //adding artist column to the tableview
@@ -177,11 +188,13 @@ public class Main extends Application {
         //creating the length column
         TableColumn<SongsView, String> songsLengthColumn = new TableColumn<>("Length");
         songsLengthColumn.setCellValueFactory(new PropertyValueFactory<>("SongLength"));
+        songsLengthColumn.setResizable(false);;
         //setting the size of the column
         songsLengthColumn.prefWidthProperty().setValue(90);
         //adding artist column to the tableview
         songsTable.getColumns().add(songsLengthColumn);
 
+        songsTable.getSortOrder().addAll(songsTable.getColumns());
 
 
 
@@ -230,7 +243,9 @@ public class Main extends Application {
         Button playButton = new Button();
         playButton.setGraphic(playIcon);
         deleteButton.setOnAction((ActionEvent ae) -> controller.onDeltePressed());
+
         audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(0,searchField.getText()));
+
         playButton.setOnAction((ActionEvent ae) -> {
 
             playSong();
@@ -249,6 +264,14 @@ public class Main extends Application {
                 });
 
         searchButton.setDisable(true);
+
+        editButton.setOnAction((ActionEvent ae) -> {
+            SongsView selection = songsTable.getSelectionModel().getSelectedItem();
+            if (selection != null) {
+                editWindow(selection);
+            }
+
+        });
 
         //adding the buttons to the VBox
         VBox.setVgrow(ADEbuttons,ALWAYS);
@@ -288,6 +311,139 @@ public class Main extends Application {
         libraryStage.show();
 
     }
+
+    public void editWindow(SongsView selectedSong) {
+        Stage editWindow = new Stage();
+        GridPane root = new GridPane();
+        VBox editBox = new VBox(10);
+        Scene editScene = new Scene(editBox,450,400);
+
+
+        editScene.getStylesheets().add("stylesheet.css");
+
+        String startSongName = selectedSong.getSongName();
+        String startArtistName = selectedSong.getArtistName();
+        String startAlbumName = selectedSong.getAlbumName();
+        String startGenre = selectedSong.getSongGenre();
+        int startSongYear = selectedSong.getSongYear();
+
+        Button acceptButton = new Button ("Accept");
+        acceptButton.getStyleClass().add("library-buttons");
+
+
+        Label nameLabel = new Label("Name :");
+        Label artistLabel = new Label("Artist :");
+        Label albumLabel = new Label("Album :");
+        Label genreLabel = new Label("Genre :");
+        Label yearLabel = new Label("Year :");
+
+        TextField nameField = new TextField();
+        nameField.textProperty().setValue(startSongName);
+        TextField artistField = new TextField();
+        artistField.textProperty().setValue(startArtistName);
+        TextField albumField = new TextField();
+        albumField.textProperty().setValue(startAlbumName);
+        TextField genreField = new TextField();
+        genreField.textProperty().setValue(startGenre);
+        TextField yearField = new TextField();
+        yearField.textProperty().setValue(String.valueOf(startSongYear));
+
+        acceptButton.setOnAction((ActionEvent ae) -> {
+
+            editWindow.hide();
+
+
+            String SongName = startSongName;
+            if (!startSongName.equals(nameField.getText())) {
+                SongName = nameField.getText();
+            }
+
+            String ArtistName = startArtistName;
+            if (!ArtistName.equals(artistField.getText())) {
+                ArtistName = artistField.getText();
+            }
+
+            String AlbumName = startAlbumName;
+            if (!startAlbumName.equals(albumField.getText())) {
+                AlbumName = albumField.getText();
+            }
+
+            String SongGenre = startGenre;
+            if (!startGenre.equals(genreField.getText())) {
+                SongGenre = genreField.getText();
+            }
+
+            int SongYear = startSongYear;
+            if (startSongYear != Integer.valueOf(yearField.getText())){
+                SongYear = Integer.valueOf(yearField.getText());
+            }
+
+            int ArtistID = ArtistService.getArtistIdFromName(ArtistName,database);
+            if (ArtistID == 0) {
+                Artist newArtist = new Artist(0,ArtistName);
+                ArtistService.save(newArtist,database);
+
+
+            }
+
+            int AlbumID = AlbumService.getAlbumIdFromName(AlbumName,database);
+            if (AlbumID == 0) {
+                Album newAlbum = new Album(0,ArtistID,AlbumName,SongYear,SongGenre,"");
+                AlbumService.save(newAlbum,database);
+                AlbumID = AlbumService.getAlbumIdFromName(AlbumName,database);
+            }
+
+
+
+            ArtistID = ArtistService.getArtistIdFromName(ArtistName,database);
+
+            Songs songToSave = new Songs(0,ArtistID,AlbumID,SongsService.getFilePath(selectedSong,database),SongName,selectedSong.getSongLength(),SongGenre);
+            Songs songToRemove = new Songs(selectedSong.getSongID(),ArtistID,AlbumID,SongsService.getFilePath(selectedSong,database),SongName,selectedSong.getSongLength(),SongGenre);
+            SongsService.save(songToSave,database);
+            SongsService.deleteById(songToRemove,database);
+            controller.updateTable(selectedSong.getSongID(),"");
+
+            editWindow.close();
+
+        });
+
+        GridPane.setConstraints(nameLabel,0,0);
+        GridPane.setConstraints(artistLabel,0,1);
+        GridPane.setConstraints(albumLabel,0,2);
+        GridPane.setConstraints(genreLabel,0,3);
+        GridPane.setConstraints(yearLabel,0,4);
+
+        GridPane.setConstraints(nameField,1,0);
+        GridPane.setConstraints(artistField,1,1);
+        GridPane.setConstraints(albumField,1,2);
+        GridPane.setConstraints(genreField,1,3);
+        GridPane.setConstraints(yearField,1,4);
+
+        editWindow.setTitle("Editing: " +startSongName);
+
+        root.getChildren().addAll(nameLabel,nameField,artistField,artistLabel,
+                genreField,genreLabel,yearField,yearLabel,albumField,albumLabel);
+        root.setAlignment(Pos.CENTER);
+
+        editBox.setAlignment(Pos.CENTER);
+
+        editBox.getChildren().addAll(root,acceptButton);
+
+        root.setHgap(10);
+        root.setVgap(10);
+
+        editWindow.setResizable(false);
+        editWindow.setScene(editScene);
+        editWindow.show();
+
+
+
+
+    }
+
+
+
+
 
     public void playWindow() {
 
@@ -354,7 +510,9 @@ public class Main extends Application {
                 public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
                     progress.setValue(newValue.toSeconds());
                     progress.setMax(songPlayer.getTotalDuration().toSeconds());
-                    currenttimeLabel.setText(df.format(songPlayer.getCurrentTime().toMinutes())+"/"+df.format(songPlayer.getTotalDuration().toMinutes()));
+                    String currentTime = String.format("%02d:%02d", ((long) songPlayer.getCurrentTime().toSeconds()) / 60, ((long) songPlayer.getCurrentTime().toSeconds()) % 60);
+                    String totalTime = String.format("%02d:%02d", ((long) songPlayer.getTotalDuration().toSeconds()) / 60, ((long) songPlayer.getTotalDuration().toSeconds()) % 60);
+                    currenttimeLabel.setText(currentTime+"/"+totalTime);
                 }
             });
 

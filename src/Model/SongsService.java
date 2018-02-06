@@ -57,7 +57,7 @@ public class SongsService {
                                 results.getString("a2Name"),
                                 results.getString("genre"),
                                 results.getInt("year"),
-                                results.getFloat("length")
+                                results.getString("length")
                         ));
                     }
                 }
@@ -82,15 +82,17 @@ public class SongsService {
                 ResultSet results = database.executeQuery(statement);
 
                 if (results != null) {
-                    result = new Songs(
-                            results.getInt("SongID"),
-                            results.getInt("ArtistID"),
-                            results.getInt("AlbumID"),
-                            results.getString("FilePath"),
-                            results.getString("SongName"),
-                            results.getString("SongLength"),
-                            results.getString("SongGenre")
-                    );
+                    while (results.next()) {
+                        result = new Songs(
+                                results.getInt("SongID"),
+                                results.getInt("ArtistID"),
+                                results.getInt("AlbumID"),
+                                results.getString("FilePath"),
+                                results.getString("SongName"),
+                                results.getString("SongLength"),
+                                results.getString("SongGenre")
+                        );
+                    }
                 }
 
             }
@@ -119,8 +121,8 @@ public class SongsService {
                 database.executeUpdate(statement);
             }
             else {
-                PreparedStatement statement = database.newStatement("UPDATE Songs SET (ArtistID, AlbumID, FilePath," +
-                        "SongName, SongLength, SongGenre) = (?,?,?,?,?) WHERE SongID = ?");
+                PreparedStatement statement = database.newStatement("UPDATE Songs SET ArtistID = ?, AlbumID = ?, FilePath = ?," +
+                        "SongName = ?, SongLength = ?, SongGenre = ? WHERE SongID = ?");
                 statement.setInt(1, itemToSave.getArtistID());
                 statement.setInt(2, itemToSave.getAlbumID());
                 statement.setString(3, itemToSave.getFilePath());
@@ -128,6 +130,7 @@ public class SongsService {
                 statement.setString(5, itemToSave.getSongLength());
                 statement.setInt(5, itemToSave.getSongID());
                 database.executeUpdate(statement);
+                statement.close();
             }
         } catch (SQLException resultsException) {
             System.out.println("Database saving error: " + resultsException.getMessage());

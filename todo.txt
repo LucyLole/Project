@@ -1,12 +1,1 @@
 TODO:
-
-recursive search
-
-
-top pane
--make search work
-
-Stylesheet
--textfield
--tableview
--popout window

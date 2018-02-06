@@ -113,16 +113,18 @@ public class ArtistService {
     public static int getArtistIdFromName(String ArtistName, DatabaseConnection database) {
         int id;
         id = 0;
-        PreparedStatement statement = database.newStatement("SELECT ArtistID from Artist WHERE ArtistName = ?");
+        PreparedStatement statement3 = database.newStatement("SELECT ArtistID from Artist WHERE ArtistName = ?");
         try {
-            if (statement != null) {
-                statement.setString(1, ArtistName);
-                ResultSet result  = database.executeQuery(statement);
-                id = result.getInt("ArtistID");
+            if (statement3 != null) {
+                statement3.setString(1, ArtistName);
+                ResultSet result2  = database.executeQuery(statement3);
+                while (result2.next() ) {
+                    id = result2.getInt("ArtistID");
+                }
             }
 
         } catch (SQLException resultsException) {
-            System.out.println("Database name from ID error: " + resultsException.getMessage());
+            System.out.println("(ArtistService) Database id from name: " + resultsException.getMessage());
         }
         return id;
     }

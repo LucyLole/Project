@@ -3,11 +3,15 @@ import Model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -15,8 +19,11 @@ import com.mpatric.mp3agic.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Optional;
 
 
 public class Controller {
@@ -26,10 +33,11 @@ public class Controller {
     private ArrayList<SongsView> allSongsView = new ArrayList<>();
 
     private FileChooser fileChooser = new FileChooser();
+    private DirectoryChooser directoryChooser = new DirectoryChooser();
 
     private Stage stage;
 
-
+    private ArrayList<String> mp3Paths = new ArrayList();
 
     private DatabaseConnection database;
 
@@ -41,7 +49,7 @@ public class Controller {
 
         this.songsTable = songsTable;
 
-        database = new DatabaseConnection("MusicPlayerDatabase.db");
+        database = Main.database;
         updateTable(0,"");
     }
 
@@ -77,9 +85,13 @@ public class Controller {
             return false;
                 });
 
+        SortedList<SongsView> sortedSongs = new SortedList<>(filteredSongs);
+
+        sortedSongs.comparatorProperty().bind(songsTable.comparatorProperty());
+
 
         //set the items to be our filtered list
-        songsTable.setItems(filteredSongs);
+        songsTable.setItems(sortedSongs);
 
 
         if (selectedSongID != 0) {
@@ -105,16 +117,26 @@ public class Controller {
         }
     }
 
-    public void addButtonPressed() throws IOException,UnsupportedTagException,InvalidDataException {
+
+
+    public void addNewFilePressed() throws Exception {
         fileChooser.setTitle("Add Song File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mp3","*.mp3"));
 
 
         File newFile = fileChooser.showOpenDialog(stage);
+        addFile(newFile);
+        updateTable(songsTable.getSelectionModel().getSelectedIndex(),"");
+
+
+    }
+
+    public void addFile(File newFile) throws Exception {
+
         if (newFile != null) {
 
-            String filePath  = newFile.getCanonicalPath();
-            String name = newFile.getName();
+            String filePath = newFile.getCanonicalPath();
+            String name = newFile.getName().replace(".mp3", "");
             Mp3File mp3Data = new Mp3File(filePath);
             ID3v2 mp3DataTag = mp3Data.getId3v2Tag();
             String artistName = mp3DataTag.getArtist();
@@ -127,33 +149,108 @@ public class Controller {
 
 
             if (ArtistID == 0) {
-                Artist newArtist = new Artist(0,artistName);
-                ArtistService.save(newArtist,database);
+                Artist newArtist = new Artist(0, artistName);
+                ArtistService.save(newArtist, database);
                 ArtistID = ArtistService.getArtistIdFromName(artistName, database);
             }
 
-            int AlbumID = AlbumService.getAlbumIdFromName(albumName,database);
-
-
-
+            int AlbumID = AlbumService.getAlbumIdFromName(albumName, database);
             if (AlbumID == 0) {
-                Album newAlbum =  new Album(0,ArtistID,albumName,year,genre,"");
-                AlbumService.save(newAlbum,database);
-                AlbumID = AlbumService.getAlbumIdFromName(albumName,database);
+                Album newAlbum = new Album(0, ArtistID, albumName, year, genre, "");
+                AlbumService.save(newAlbum, database);
+                AlbumID = AlbumService.getAlbumIdFromName(albumName, database);
             }
 
 
-
-            Songs newSong = new Songs(0,ArtistID,AlbumID,filePath,name,length,genre);
-            SongsService.save(newSong,database);
-
-            updateTable(songsTable.getSelectionModel().getSelectedIndex(),"");
-
-
+            Songs newSong = new Songs(0, ArtistID, AlbumID, filePath, name, length, genre);
+            SongsService.save(newSong, database);
         }
+    }
+
+
+
+
+    public void searchFolder() throws Exception {
+        mp3Paths.clear();
+
+        directoryChooser.setTitle("Add Album");
+
+        File startDirectory = directoryChooser.showDialog(stage);
+        getMp3s(startDirectory);
+
+        for (String m : mp3Paths) {
+            File f = new File(m);
+            addFile(f);
+        }
+
+        updateTable(songsTable.getSelectionModel().getSelectedIndex(),"");
+
 
 
     }
+
+    void getMp3s(File f) {
+        File[] files;
+        if (f.isDirectory() && (files = f.listFiles()) != null) {
+            for (File file : files) {
+                getMp3s(file);
+            }
+        }
+        else {
+            String path = f.getPath();
+            if (path.endsWith((".mp3"))) {
+                mp3Paths.add(f.getPath());
+            }
+        }
+
+    }
+
+
+
+    public void newAlbumArt(SongsView selectedItem) throws Exception {
+        fileChooser.setTitle("Add Album Art");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg","*.jpg"),new FileChooser.ExtensionFilter("png","*.png"));
+
+        File newFile = fileChooser.showOpenDialog(stage);
+        if (newFile != null) {
+            String artworkFilePath = newFile.getCanonicalPath();
+            int AlbumID = AlbumService.getAlbumIdFromName(selectedItem.getAlbumName(),database);
+
+            AlbumService.setAlbumArtowkrFromID(AlbumID,artworkFilePath,database);
+        }
+    }
+
+
+    public void addButtonPressed() throws Exception {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Select Add Type");
+        alert.setHeaderText("Please select what to add");
+        ButtonType buttonTypeSingleFile = new ButtonType("Add File");
+        ButtonType buttonTypeAlbum = new ButtonType("Add Album");
+        ButtonType buttonTypeAlbumArt = new ButtonType("Add Album Artwork");
+
+        alert.getButtonTypes().removeAll(ButtonType.OK,ButtonType.CANCEL);
+        alert.getButtonTypes().addAll(buttonTypeSingleFile,buttonTypeAlbum,buttonTypeAlbumArt);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == buttonTypeSingleFile) {
+            addNewFilePressed();
+        }
+        else if (result.get() == buttonTypeAlbum) {
+            searchFolder();
+        }
+        else if (result.get() == buttonTypeAlbumArt) {
+            if (songsTable.getSelectionModel().getSelectedItem() != null) {
+                SongsView selectedItem = songsTable.getSelectionModel().getSelectedItem();
+                newAlbumArt(selectedItem);
+            }
+            else {
+                Alert noSelected = new Alert(Alert.AlertType.ERROR,"No Selection");
+                noSelected.setContentText("Please select a song first");
+                noSelected.showAndWait();
+            }
+        }
+    }
+
 
 
     public void onDeltePressed() {
