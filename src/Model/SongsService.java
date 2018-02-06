@@ -22,7 +22,7 @@ public class SongsService {
                                 results.getInt("AlbumID"),
                                 results.getString("FilePath"),
                                 results.getString("SongName"),
-                                results.getFloat("SongLength"),
+                                results.getString("SongLength"),
                                 results.getString("SongGenre")
                         ));
                     }
@@ -88,7 +88,7 @@ public class SongsService {
                             results.getInt("AlbumID"),
                             results.getString("FilePath"),
                             results.getString("SongName"),
-                            results.getFloat("SongLength"),
+                            results.getString("SongLength"),
                             results.getString("SongGenre")
                     );
                 }
@@ -114,7 +114,7 @@ public class SongsService {
                 statement.setInt(2, itemToSave.getAlbumID());
                 statement.setString(3, itemToSave.getFilePath());
                 statement.setString(4, itemToSave.getSongName());
-                statement.setFloat(5, itemToSave.getSongLength());
+                statement.setString(5, itemToSave.getSongLength());
                 statement.setString(6, itemToSave.getSongGenre());
                 database.executeUpdate(statement);
             }
@@ -125,7 +125,7 @@ public class SongsService {
                 statement.setInt(2, itemToSave.getAlbumID());
                 statement.setString(3, itemToSave.getFilePath());
                 statement.setString(4, itemToSave.getSongName());
-                statement.setFloat(5, itemToSave.getSongLength());
+                statement.setString(5, itemToSave.getSongLength());
                 statement.setInt(5, itemToSave.getSongID());
                 database.executeUpdate(statement);
             }

@@ -5,11 +5,11 @@ public class Songs {
     private int artistID;
     private int albumID;
     private String songName;
-    private float songLength;
+    private String songLength;
     private String songGenre;
     private String filePath;
 
-    public Songs(int songID, int artistID, int albumID, String filePath, String songName, float songLength, String songGenre) {
+    public Songs(int songID, int artistID, int albumID, String filePath, String songName, String songLength, String songGenre) {
         this.songID = songID;
         this.artistID = artistID;
         this.albumID = albumID;
@@ -55,11 +55,11 @@ public class Songs {
         this.songName = songName;
     }
 
-    public float getSongLength() {
+    public String getSongLength() {
         return songLength;
     }
 
-    public void setSongLength(float songLength) {
+    public void setSongLength(String songLength) {
         this.songLength = songLength;
     }
 

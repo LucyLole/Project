@@ -111,7 +111,7 @@ public class AlbumService {
     public static int getAlbumIdFromName(String AlbumName, DatabaseConnection database) {
         int id;
         id = 0;
-        PreparedStatement statement = database.newStatement("SELECT AlbumID from Album WHERE AlbumName = ?");
+        PreparedStatement statement = database.newStatement("SELECT AlbumID from Albums WHERE AlbumName = ?");
         try {
             if (statement != null) {
                 statement.setString(1, AlbumName);

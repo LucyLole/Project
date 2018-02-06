@@ -15,6 +15,7 @@ import com.mpatric.mp3agic.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 
 
@@ -108,12 +109,46 @@ public class Controller {
         fileChooser.setTitle("Add Song File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mp3","*.mp3"));
 
-        Mp3File mp3file = new Mp3File("SomeMp3File.mp3");
 
         File newFile = fileChooser.showOpenDialog(stage);
         if (newFile != null) {
+
             String filePath  = newFile.getCanonicalPath();
             String name = newFile.getName();
+            Mp3File mp3Data = new Mp3File(filePath);
+            ID3v2 mp3DataTag = mp3Data.getId3v2Tag();
+            String artistName = mp3DataTag.getArtist();
+            String albumName = mp3DataTag.getAlbum();
+            String length = String.format("%02d:%02d", mp3Data.getLengthInSeconds() / 60, mp3Data.getLengthInSeconds() % 60);
+            String genre = mp3DataTag.getGenreDescription();
+            int year = Integer.parseInt(mp3DataTag.getYear());
+
+            int ArtistID = ArtistService.getArtistIdFromName(artistName, database);
+
+
+            if (ArtistID == 0) {
+                Artist newArtist = new Artist(0,artistName);
+                ArtistService.save(newArtist,database);
+                ArtistID = ArtistService.getArtistIdFromName(artistName, database);
+            }
+
+            int AlbumID = AlbumService.getAlbumIdFromName(albumName,database);
+
+
+
+            if (AlbumID == 0) {
+                Album newAlbum =  new Album(0,ArtistID,albumName,year,genre,"");
+                AlbumService.save(newAlbum,database);
+                AlbumID = AlbumService.getAlbumIdFromName(albumName,database);
+            }
+
+
+
+            Songs newSong = new Songs(0,ArtistID,AlbumID,filePath,name,length,genre);
+            SongsService.save(newSong,database);
+
+            updateTable(songsTable.getSelectionModel().getSelectedIndex(),"");
+
 
         }
 
