@@ -1,7 +1,12 @@
 
 import Model.SongsView;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -18,11 +24,14 @@ import javafx.stage.Stage;
 import Model.DatabaseConnection;
 import Model.*;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -47,6 +56,7 @@ public class Main extends Application {
             if (songFile.isFile()) {
                 Media songMedia = new Media(songFile.toURI().toString());
                 songPlayer = new MediaPlayer(songMedia);
+                songPlayer.setVolume(0.50);
                 songPlayer.play();
             } else {
                 System.out.println("File error.");
@@ -58,6 +68,7 @@ public class Main extends Application {
     public void start(Stage libraryStage) {
         controller = new Controller(songsTable);
         database = new DatabaseConnection("MusicPlayerDatabase.db");
+
 
         //Loading our images
         ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/playIcon.png")));
@@ -205,13 +216,12 @@ public class Main extends Application {
         playButton.setGraphic(playIcon);
         audioButton.setOnAction((ActionEvent ae) -> controller.updateTable(0));
         playButton.setOnAction((ActionEvent ae) -> {
+
             playSong();
 
             if (!playWindowShowing) {
                 playWindow();
             }
-
-
         });
 
         //adding the buttons to the VBox
@@ -251,41 +261,11 @@ public class Main extends Application {
         libraryStage.setScene(mainScene);
         libraryStage.show();
 
-
-        //This is testing adding albums
-
-        /*
-        Album TestAlb = new Album(8,8,"TestAlb",1999,"Classical",
-                "/artwork/test.png");
-        AlbumService.save(TestAlb, database);
-
-
-
-        Songs TestSong = new Songs(0,8,8,"../songs/test.mp3","TestSong",7.13f,"Classical");
-        SongsService.save(TestSong, database);
-
-
-
-        Artist TestArtist = new Artist(8, "TestArtist");
-        ArtistService.save(TestArtist, database);
-
-
-        ArrayList<Album> testlist = new ArrayList<>();
-        AlbumService.selectAll(testlist,database);
-
-        Album test2 = AlbumService.selectById(2
-                ,database);
-        System.out.println(test2.toString());
-        */
-        /*
-        for (Album a: testlist) {
-            System.out.println(a);
-        }
-        */
     }
 
     public void playWindow() {
 
+        final DecimalFormat df = new DecimalFormat("#.##");
         Stage playbackWindow = new Stage();
 
         ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/playIcon.png")));
@@ -302,22 +282,78 @@ public class Main extends Application {
         Scene playbackScene = new Scene(playbackRoot, 650, 600);
         playbackScene.getStylesheets().add("stylesheet.css");
         ImageView albumArt = new ImageView("/Images/defaultArt.jpg");
-        if (selectedSong != null && AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database) != null) {
-            albumArt = new ImageView(new Image (new File(AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database)).toURI().toString()));
-        }
-        albumArt.setFitHeight(400);
-        albumArt.setFitWidth(400);
+
+
         HBox nowPlaying  = new HBox(10);
         HBox controlsBox  = new HBox(10);
         Button back  = new Button();
         back.setGraphic(backwardsIcon);
         Button playPause  = new Button();
+        Label currenttimeLabel = new Label("0.00/0.00");
         playPause.setGraphic(pauseIcon);
+        Button forward  = new Button();
+        forward.setGraphic(forwardsIcon);
+        Label playingInfo = new Label("Now Playing: ");
+        Slider volume = new Slider();
+        Slider progress = new Slider();
+
+
+        if (selectedSong != null && AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database) != null) {
+            albumArt = new ImageView(new Image (new File(AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database)).toURI().toString()));
+            playingInfo.setText("Now Playing: \n    "+selectedSong.getSongName()+"\n        "+selectedSong.getArtistName()+"\n            "+selectedSong.getAlbumName());
+        }
+        albumArt.setFitHeight(400);
+        albumArt.setFitWidth(400);
+
+
+        volume.setShowTickLabels(true);
+        volume.setShowTickMarks(true);
+        volume.setValue(0.5);
+        volume.valueProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (songPlayer != null) {
+                    songPlayer.setVolume(volume.getValue() / 100);
+                    volume.setValue(songPlayer.getVolume()*100);
+                }
+            }
+        });
+
+
+
+
+        if (songPlayer != null) {
+            songPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+                @Override
+                public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
+                    progress.setValue(newValue.toSeconds());
+                    progress.setMax(songPlayer.getTotalDuration().toSeconds());
+                    currenttimeLabel.setText(df.format(songPlayer.getCurrentTime().toMinutes())+"/"+df.format(songPlayer.getTotalDuration().toMinutes()));
+                }
+            });
+
+            progress.setOnMousePressed(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    songPlayer.pause();
+                }
+            });
+
+            progress.setOnMouseReleased(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    songPlayer.seek(Duration.seconds(progress.getValue()));
+                    songPlayer.play();
+                }
+            });
+        }
+
+
 
 
         playPause.setOnAction((ActionEvent ae) -> {
             controller.playButtonPressed();
-            if (songPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            if (songPlayer != null && songPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                 playPause.setGraphic(playIcon);
             }
             else {
@@ -325,12 +361,32 @@ public class Main extends Application {
             }
         });
 
+        forward.setOnAction((ActionEvent ae) -> {
+           if (songsTable.getSelectionModel().getSelectedItem() != null) {
+               songsTable.getSelectionModel().selectBelowCell();
+               if (songPlayer != null) {
+                   songPlayer.stop();
+               }
+               playSong();
+               playbackWindow.close();
+               playWindow();
+           }
 
-        Button forward  = new Button();
-        forward.setGraphic(forwardsIcon);
-        Label playingInfo = new Label("Now Playing: ");
-        Slider volume = new Slider();
-        Slider progress = new Slider();
+        });
+
+        back.setOnAction((ActionEvent ae) -> {
+            if (songsTable.getSelectionModel().getSelectedItem() != null) {
+                songsTable.getSelectionModel().selectAboveCell();
+                if (songPlayer != null) {
+                    songPlayer.stop();
+                }
+                playSong();
+                playbackWindow.close();
+                playWindow();
+            }
+
+        });
+
 
         playbackWindow.getIcons().add(new Image("/Images/playIcon.png"));
 
@@ -341,7 +397,7 @@ public class Main extends Application {
         nowPlaying.getChildren().addAll(playingInfo,volume);
         controlsBox.getChildren().addAll(back,playPause,forward);
 
-        playbackRoot.getChildren().addAll(albumArt,nowPlaying,progress,controlsBox);
+        playbackRoot.getChildren().addAll(albumArt,nowPlaying,currenttimeLabel,progress,controlsBox);
         playbackRoot.setAlignment(Pos.CENTER);
         controlsBox.setAlignment(Pos.CENTER);
         nowPlaying.setAlignment(Pos.CENTER);
