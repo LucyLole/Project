@@ -263,6 +263,10 @@ public class Controller {
                 updateTable(songsTable.getSelectionModel().getSelectedIndex() + 1, searchText);
             }
 
+        } else {
+            Alert noSelected = new Alert(Alert.AlertType.ERROR,"No Selection");
+            noSelected.setContentText("Please select a song first before deleting");
+            noSelected.showAndWait();
         }
 
     }

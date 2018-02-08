@@ -353,6 +353,15 @@ public class Main extends Application {
             editWindow.hide();
 
 
+            try {
+                    Integer.parseInt(yearField.getText());
+            } catch (NumberFormatException e) {
+                Alert noSelected = new Alert(Alert.AlertType.ERROR,"Invalid Input");
+                noSelected.setContentText("Year entered was not a number ");
+                noSelected.showAndWait();
+                return;
+            }
+
             String SongName = startSongName;
             if (!startSongName.equals(nameField.getText())) {
                 SongName = nameField.getText();
@@ -482,8 +491,11 @@ public class Main extends Application {
 
         if (selectedSong != null && AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database) != null) {
             albumArt = new ImageView(new Image (new File(AlbumService.getAlbumArtFromName(selectedSong.getAlbumName(), database)).toURI().toString()));
+        }
+        if (selectedSong != null) {
             playingInfo.setText("Now Playing: \n    "+selectedSong.getSongName()+"\n        "+selectedSong.getArtistName()+"\n            "+selectedSong.getAlbumName());
         }
+
         albumArt.setFitHeight(400);
         albumArt.setFitWidth(400);
 
