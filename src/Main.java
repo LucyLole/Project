@@ -45,6 +45,7 @@ public class Main extends Application {
     private boolean playWindowShowing = false;
 
     private static Controller controller;
+    private Stage playbackWindow = new Stage();
     public static DatabaseConnection database;
 
     public static MediaPlayer songPlayer = null;
@@ -249,10 +250,8 @@ public class Main extends Application {
         playButton.setOnAction((ActionEvent ae) -> {
 
             playSong();
-
-            if (!playWindowShowing) {
-                playWindow();
-            }
+            playbackWindow.close();
+            playWindow();
         });
 
         addButton.setOnAction((ActionEvent ae) -> {
@@ -457,7 +456,7 @@ public class Main extends Application {
     public void playWindow() {
 
         final DecimalFormat df = new DecimalFormat("#.##");
-        Stage playbackWindow = new Stage();
+        //Stage playbackWindow = new Stage();
 
         ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/playIcon.png")));
         ImageView pauseIcon = new ImageView(new Image(getClass().getResourceAsStream("/Images/pauseIcon.png")));
